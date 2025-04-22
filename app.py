@@ -1,11 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, Response
 import html
-import requests
 
 app = Flask(__name__)
 
 # Dummy product list to simulate fetching from a Shopify store or database
-# You should replace this with actual product data from Shopify or your own source
+# Replace this with actual product data
 products = [
     {"title": "Wooden Stacking Toy", "link": "https://babyandtoys.us/products/wooden-stacking-toy", "description": "A classic wooden stacking toy for developing coordination and motor skills."},
     {"title": "Plush Teddy Bear", "link": "https://babyandtoys.us/products/plush-teddy-bear", "description": "Super soft and cuddly teddy bear, perfect for nap time."},
@@ -42,7 +41,8 @@ def feed():
         </channel>
     </rss>"""
 
-    return rss_feed
+    # Return the response with the appropriate content type for RSS
+    return Response(rss_feed, mimetype='application/rss+xml')
 
 if __name__ == '__main__':
     app.run(debug=True)
