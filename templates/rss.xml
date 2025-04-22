@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+        <title>Baby & Toys Product Feed</title>
+        <link>{{ url_for('index', _external=True) }}</link>
+        <description>Latest products from Baby & Toys</description>
+        {% for product in products %}
+            <item>
+                <title>{{ product.title }}</title>
+                <link>{{ product.url }}</link>
+                <description>{{ product.description }}</description>
+            </item>
+        {% endfor %}
+    </channel>
+</rss>

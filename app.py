@@ -1,51 +1,35 @@
-from flask import Flask, Response
-import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from flask import Flask, render_template, Response
 
 app = Flask(__name__)
 
-SHOP = "babyandtoys.us"
-API_VERSION = "2024-04"
-ACCESS_TOKEN = os.getenv("dd1807435fd5b0a34bf83637687473df-1745238790")
-
-@app.route("/")
-def home():
+# Homepage route
+@app.route('/')
+def index():
     return "✅ Baby & Toys RSS Feed Generator is working!"
 
-@app.route("/rss.xml")
+# RSS feed route
+@app.route('/feed')
 def rss_feed():
-    headers = {
-        "X-Shopify-Access-Token": ACCESS_TOKEN,
-        "Content-Type": "application/json"
-    }
-    url = f"https://{SHOP}/admin/api/{API_VERSION}/products.json?published_status=published"
-    response = requests.get(url, headers=headers)
-    products = response.json().get("products", [])
+    products = [
+        {
+            "title": "Wooden Stacking Toy",
+            "url": "https://babyandtoys.us/products/wooden-stacking-toy",
+            "description": "A classic wooden stacking toy for developing coordination and motor skills."
+        },
+        {
+            "title": "Plush Teddy Bear",
+            "url": "https://babyandtoys.us/products/plush-teddy-bear",
+            "description": "Super soft and cuddly teddy bear, perfect for nap time."
+        },
+        {
+            "title": "Colorful Baby Rattle",
+            "url": "https://babyandtoys.us/products/colorful-baby-rattle",
+            "description": "Engaging rattle with colors and textures to stimulate your baby’s senses."
+        }
+    ]
 
-    rss_items = ""
-    for product in products:
-        title = product['title']
-        link = f"https://{SHOP}/products/{product['handle']}"
-        description = product.get('body_html', '')
-        rss_items += f"""
-        <item>
-            <title>{title}</title>
-            <link>{link}</link>
-            <description><![CDATA[{description}]]></description>
-        </item>
-        """
+    rss_xml = render_template("rss.xml", products=products)
+    return Response(rss_xml, mimetype='application/rss+xml')
 
-    rss = f"""<?xml version="1.0" encoding="UTF-8" ?>
-    <rss version="2.0">
-        <channel>
-            <title>Baby and Toys Product Feed</title>
-            <link>https://{SHOP}</link>
-            <description>Latest published products from Baby and Toys</description>
-            {rss_items}
-        </channel>
-    </rss>"""
-
-    return Response(rss, mimetype='application/rss+xml')
+if __name__ == '__main__':
+    app.run(debug=True)
